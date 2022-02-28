@@ -40,7 +40,7 @@ instance Pretty Goal where
   pretty  (Goal x ) = "?- " ++ commaSep (getTerm x) ", "  ++ ")."
 
 getTerm :: (Pretty a) => [a] -> [String]
--- | The function 'getTerm' Transform a list of strings into a comma separated string
+-- | The function 'getTerm' converts a list of a into a list of string using pretty.
 getTerm [] = []
 getTerm (x:xs) = [pretty x]  ++ getTerm xs
 
