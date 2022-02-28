@@ -4,7 +4,6 @@ module Type
   ) where
 
 import Control.Monad
-
 import Test.QuickCheck
 
 -- Data type for variable names
