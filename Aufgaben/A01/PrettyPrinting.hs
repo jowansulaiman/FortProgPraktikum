@@ -20,31 +20,31 @@ instance Pretty Term where
 -- | Instances for the predefined data types Term
    pretty  (Var (VarName x)) = x
    pretty  (Comb z [])       = z
-   pretty  (Comb z x)        = z ++ "(" ++ commaSep (dataTypesToString x) ", " ++ ")"
+   pretty  (Comb z x)        = z ++ "(" ++ commaSep (map pretty x) ", " ++ ")"
 
 instance Pretty Rule where
 -- | Instances for the predefined data types Rule
-   pretty  (Rule (Var  (VarName x)) []) = x
-   pretty  (Rule (Comb y []) []       ) =  y
-   pretty  (Rule (Comb y x ) []       ) =  y ++ "(" ++ commaSep (dataTypesToString x) ", "        ++ ")."
-   pretty  (Rule (Comb y x ) z        ) = (y ++ "(" ++ commaSep (dataTypesToString x) ", "       ++ ") :- ")    ++ commaSep (dataTypesToString z) ", " ++ "."
+   pretty  (Rule t []) = pretty  t  ++ "."
+   pretty  (Rule t s)  = pretty  t  ++ " :- " ++ commaSep (map pretty s) ", "  ++ "."
 
 instance Pretty Prog where
 -- | Instances for the predefined data types Prog
    pretty  (Prog []) = ""
-   pretty  (Prog x) = commaSep (dataTypesToString x) "\n "
+   pretty  (Prog x) = commaSep (map pretty x)  "\n "
 
 instance Pretty Goal where
 -- | Instances for the predefined data types Goal
   pretty  (Goal []) = "?- ."
-  pretty  (Goal x ) = "?- " ++ commaSep (dataTypesToString x) ", "  ++ ")."
-
-dataTypesToString :: (Pretty a) => [a] -> [String]
--- | The function 'dataTypesToString' converts a list of a into a list of string using pretty.
-dataTypesToString [] = []
-dataTypesToString (x:xs) = [pretty x]  ++ dataTypesToString xs
+  pretty  (Goal x ) = "?- " ++ commaSep (map pretty x)  ", "  ++ "."
 
 commaSep :: [String] -> String -> String
 -- | The function 'commaSep' Transform a list of strings into a comma separated string
 commaSep [] _ = ""
 commaSep s  k = foldr1 (\s1 s2 -> s1 ++ k ++ s2) s
+
+replace :: Eq a => [a] -> [a] -> [a] -> [a]
+replace [] _    _    = []
+replace s  find repl =
+     if take (length find) s == find
+        then repl ++ (replace (drop (length find) s) find repl)
+        else [head s] ++ (replace (tail s) find repl)
