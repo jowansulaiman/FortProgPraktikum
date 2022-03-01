@@ -5,42 +5,44 @@ Description : Representation of terms
 Maintainer  : Jowan Sulaiman and Kjell Rothenburger
 
 the module contains a type class $Pretty,
-which includes a method $'pretty' :: a -> String to output data types nicely.
+which includes a method $'pretty' :: a -> String to transform data types into
+a pretty looking string.
 -}
 module PrettyPrinting where
 import Type
 
 class  (Show a) => (Pretty a)  where
-     -- ^ The 'a' argument and The 'String' is return value
-     pretty ::a -> String
-     -- | The function $'pretty' takes a value and converts it to string with the help of show.
+     -- default function
+     pretty :: a -> String
+     -- | The function $'pretty' takes a value and converts it to string by using show.
      pretty  = show
 
 instance Pretty Term where
--- | Instances for the predefined data types Term
+-- | Instance for the predefined data type Term
    pretty  (Var (VarName x)) = x
    pretty  (Comb z [])       = z
-   pretty  (Comb z x)        = z ++ "(" ++ commaSep (map pretty x) ", " ++ ")"
+   pretty  (Comb z x)        = z ++ "(" ++ concatSep (map pretty x) ", " ++ ")"
 
 instance Pretty Rule where
--- | Instances for the predefined data types Rule
+-- | Instance for the predefined data type Rule
    pretty  (Rule t []) = pretty  t  ++ "."
-   pretty  (Rule t s)  = pretty  t  ++ " :- " ++ commaSep (map pretty s) ", "  ++ "."
+   pretty  (Rule t s)  = pretty  t  ++ " :- " ++ concatSep (map pretty s) ", "  ++ "."
 
 instance Pretty Prog where
--- | Instances for the predefined data types Prog
+-- | Instance for the predefined data type Prog
    pretty  (Prog []) = ""
-   pretty  (Prog x) = commaSep (map pretty x)  "\n "
+   pretty  (Prog x) = concatSep (map pretty x)  "\n"
 
 instance Pretty Goal where
 -- | Instances for the predefined data types Goal
   pretty  (Goal []) = "?- ."
-  pretty  (Goal x ) = "?- " ++ commaSep (map pretty x)  ", "  ++ "."
+  pretty  (Goal x ) = "?- " ++ concatSep (map pretty x)  ", "  ++ "."
 
-commaSep :: [String] -> String -> String
--- | The function 'commaSep' Transform a list of strings into a comma separated string
-commaSep [] _ = ""
-commaSep s  k = foldr1 (\s1 s2 -> s1 ++ k ++ s2) s
+concatSep :: [String] -> String -> String
+-- | The function concatSep concatenates a list of strings to a single string
+-- while also seperating the elements using the given seperator
+concatSep [] _   = ""
+concatSep ss sep = foldr1 (\s1 s2 -> s1 ++ sep ++ s2) ss
 
 replace :: Eq a => [a] -> [a] -> [a] -> [a]
 replace [] _    _    = []
