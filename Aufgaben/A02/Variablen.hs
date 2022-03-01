@@ -12,34 +12,35 @@ module Variablen where
 import Type
 
 class (Show a) =>  (Vars a)  where
-   -- ^ The 'a' argument and The '[VarName]' is return value
+   -- ^ default function
    allVars ::  a -> [VarName]
-   -- | This function $'allVars' returns all variables contained in a data type (without duplicates).s
+   -- | This function $'allVars' returns all variables contained in a data type (without duplicates).
    allVars   x      = [VarName (show x)]
 
 instance Vars Term where
--- | Instances for the predefined data types Term
+-- | Instances for the predefined data type Term
    allVars  (Var (VarName x)) = [VarName x]
    allVars  (Comb _ []  )     = [] --[VarName f]
    allVars  (Comb _ (xs))     = nub (concat (map allVars xs)) --concat (map allVars xs) --concat (map allVars xs)
 
 instance Vars Rule where
--- | Instances for the predefined data types Rule
+-- | Instances for the predefined data type Rule
    allVars  (Rule t [])       = allVars t
    allVars  (Rule t s)        = allVars  t  ++ nub (concat (map allVars s))
 
 instance Vars Prog where
--- | Instances for the predefined data types Prog
+-- | Instances for the predefined data type Prog
    allVars  (Prog [])         = []
    allVars  (Prog x)          = nub (concat (map allVars x))
 
 instance Vars Goal where
--- | Instances for the predefined data types Goal
+-- | Instances for the predefined data type Goal
   allVars (Goal [])           = []
   allVars (Goal x )           = nub (concat (map allVars x))
 
--- Delete all duplicates in a list
+
 nub :: Eq a => [a] -> [a]
+-- | Delete all duplicates in a list
 nub []                        = []
 nub (x:xs)                    = x : nub (filter (/=x) xs)
 
