@@ -14,7 +14,7 @@ import Type
 class (Show a) =>  (Vars a)  where
    -- ^ The 'a' argument and The '[VarName]' is return value
    allVars ::  a -> [VarName]
-   -- | This function $'allVars' returns all variables contained in a data type (without duplicates).
+   -- | This function $'allVars' returns all variables contained in a data type (without duplicates).s
    allVars   x      = [VarName (show x)]
 
 instance Vars Term where
