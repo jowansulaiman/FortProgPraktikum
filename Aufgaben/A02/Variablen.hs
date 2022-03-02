@@ -10,6 +10,7 @@ contained in a data type (without duplicates)..
 -}
 module Variablen where
 import Type
+import Data.Char
 
 class (Show a) =>  (Vars a)  where
    -- ^ default function
@@ -44,4 +45,11 @@ nub :: Eq a => [a] -> [a]
 nub []                        = []
 nub (x:xs)                    = x : nub (filter (/=x) xs)
 
---freshVars :: [VarName]
+-- Returns an infinite List of Varnames as specified in task 3.2
+freshVars :: [VarName]
+freshVars = genFreshVars 0
+ where
+ genFreshVars :: Int -> [VarName]
+ genFreshVars n | n < 26  = (VarName [chr(ord('A')+n)]):(genFreshVars (n+1))
+                | n >= 26 = (VarName ([chr(ord('A')+(mod n 26))] ++
+                (show ((div n 26)-1)))):(genFreshVars (n+1))
