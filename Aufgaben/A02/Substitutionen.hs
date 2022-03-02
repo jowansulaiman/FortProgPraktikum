@@ -32,8 +32,18 @@ single :: VarName -> Term -> Subst
 single varName term = Subst [(varName, term)]
 
 apply :: Subst -> Term -> Term
-apply Empty  term          = term
-apply subst  (Var t)       = (Var t)
-apply subst  (Comb _ [t])  = t
+-- |  The function 'apply', which applies a substitution to a term
+apply empty  term                     = term
+apply (Subst ((v, x) :xs))   (Var t)  = if v == t then x else Var t
+--apply subst  (Comb combName (t:ts))   = (foldr  apply subst ts) -- map (apply subst) ts
 
---  Var VarName | Comb CombName [Term]
+compose :: Subst -> Subst -> Subst
+compose empty s     = s
+compose s     empty = s
+compose Subst ((v, Var v1): xs)     Subst ((v2, Var v3): ys)   =  if v1 == v2 && v == v3 then empty
+                                                             else if v1 == v2 && v != v3 then Subst ((v1, Var v3))
+                                                             else
+
+-- Subst [(VarName, Term)]
+-- Var VarName | Comb CombName [Term]
+
