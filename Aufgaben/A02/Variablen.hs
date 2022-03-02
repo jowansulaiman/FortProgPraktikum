@@ -46,3 +46,4 @@ freshVars = genFreshVars 0
  genFreshVars n | n < 26  = (VarName [chr(ord('A')+n)]):(genFreshVars (n+1))
                 | n >= 26 = (VarName ([chr(ord('A')+(mod n 26))] ++
                 (show ((div n 26)-1)))):(genFreshVars (n+1))
+                | otherwise = []
