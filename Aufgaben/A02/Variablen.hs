@@ -1,9 +1,7 @@
 {-|
 Module      : Variablen
 Description : determine existing variable names as well as create fresh variable names
-
 Maintainer  : Jowan Sulaiman and Kjell Rothenburger
-
 the module contains a type class $Vars,
 which includes a method $'allVars' ::  a -> [VarName] This method returns all variables
 contained in a data type (without duplicates)..

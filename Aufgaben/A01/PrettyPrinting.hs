@@ -8,6 +8,7 @@ the module contains a type class $Pretty,
 which includes a method $'pretty' :: a -> String to transform data types into
 a pretty looking string.
 -}
+
 module PrettyPrinting where
 import Type
 

@@ -45,3 +45,5 @@ data Prog = Prog [Rule]
 -- Data type for goals
 data Goal = Goal [Term]
   deriving Show
+
+
