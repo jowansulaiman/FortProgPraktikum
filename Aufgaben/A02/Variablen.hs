@@ -9,6 +9,7 @@ contained in a data type (without duplicates)..
 module Variablen where
 import Type
 import Data.Char
+import Data.List (nub)
 
 class (Show a) =>  (Vars a)  where
    -- ^ default function
@@ -36,12 +37,6 @@ instance Vars Goal where
 -- | Instances for the predefined data type Goal
   allVars (Goal [])           = []
   allVars (Goal x )           = nub (concat (map allVars x))
-
-
-nub :: Eq a => [a] -> [a]
--- | Delete all duplicates in a list
-nub []                        = []
-nub (x:xs)                    = x : nub (filter (/=x) xs)
 
 -- Returns an infinite List of Varnames as specified in task 3.2
 freshVars :: [VarName]
