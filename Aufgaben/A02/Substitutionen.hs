@@ -97,14 +97,9 @@ isSubListOf :: [VarName] -> [VarName] -> Bool
 isSubListOf xs ys = foldr (&&) True (map (\x -> elem x ys) xs)
 
 
-{-
-10)
-For the following laws, formulate appropriate QuickCheck properties in Haskell and ensure that your implementation of the ADT
-satisfies all the laws listed. In addition, write a function that automatically tests all QuickCheck properties in your
-module and export that function. (The laws only serve to detect common errors, but are not sufficient in their entirety
-to prove the correctness of your implementation, and thus do not replace your own tests).
+{-|
+--------------------------------------------{QuickCheck properties}-----------------------------------------------------
 -}
-
 
 prop_1 :: Term -> Bool
 prop_1 t = apply empty t == t
