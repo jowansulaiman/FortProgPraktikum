@@ -4,16 +4,15 @@ Description : Representation of terms
 
 Maintainer  : Jowan Sulaiman and Kjell Rothenburger
 
-the module contains a type class $Pretty,
-which includes a method $'pretty' :: a -> String to transform data types into
-a pretty looking string.
+the module contains a type class $Pretty, and contains  a function $'pretty' and $'concatSep'
+The description of each function can be found below.
 -}
 
 module PrettyPrinting where
 import Type
 
 class  (Show a) => (Pretty a)  where
-     -- default function
+     -- | default function
      pretty :: a -> String
      -- | The function $'pretty' takes a value and converts it to string by using show.
      pretty  = show

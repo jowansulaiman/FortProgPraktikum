@@ -2,10 +2,10 @@
 Module      : Variablen
 Description : determining existing variable names and creating an infinite amount of fresh ones
 Maintainer  : Jowan Sulaiman and Kjell Rothenburger
-the module contains a type class $Vars,
-which includes a method $'allVars' ::  a -> [VarName] This method returns all variables
-contained in a data type (without duplicates).
-and a function $freshVars which generates an infinite number of fresh variable names
+
+the module contains a Data type $Subst,
+and contains the following functions $'allVars', $freshVars/
+The description of each function can be found below.
 -}
 module Variablen where
 import Type
@@ -13,7 +13,7 @@ import Data.Char
 import Data.List (nub)
 
 class (Show a) =>  (Vars a)  where
-   -- ^ default function
+   -- | default function
    allVars ::  a -> [VarName]
    -- | This function $'allVars' returns all variables contained in a data type (without duplicates).
    allVars   x      = [VarName (show x)]
@@ -39,8 +39,8 @@ instance Vars Goal where
   allVars (Goal [])  = []
   allVars (Goal ts ) = nub (concat (map allVars ts))
 
--- Returns an infinite List of Varnames as specified in task 3.2
 freshVars :: [VarName]
+-- | Returns an infinite List of Varnames valid in Prolog. (specified in task 3.2)
 freshVars = genFreshVars 0
  where
  genFreshVars :: Int -> [VarName]

@@ -4,10 +4,10 @@ Module      : Substitutionen
 Description : Assignments of variables to terms as an abstract data type (ADT).
 Maintainer  : Jowan Sulaiman and Kjell Rothenburger
 
-the module contains a type class $Subst,
-which includes a method $'allVars' ::  x -> [VarName]
-This method returns all variables
-contained in a data type (without duplicates)..
+the module contains a Data type $Subst,
+and contains the following functions $'domain', $'empty', $'single', $'apply',
+                                     $'compose', $'restrictTo'.
+The description of each function can be found below.
 -}
 
 module Substitutionen
@@ -51,7 +51,7 @@ apply subst (Comb n v) = Comb n (map (apply subst) v)
 compose :: Subst -> Subst -> Subst
 -- | The function 'compose' composes two substitions with each other.
 compose (Subst s1) (Subst s2) = Subst $ filter unRedundantSubstitution $ map (\(x,y) -> (x, apply (Subst s1) y)) s2
-                                ++ filter (\(x,_) -> x `notElem` domain (Subst s2)) s1
+                                     ++ filter (\(x,_) -> x `notElem` domain (Subst s2)) s1
   where
     unRedundantSubstitution :: (VarName,Term) -> Bool
     unRedundantSubstitution (_, Comb _ _) = True
