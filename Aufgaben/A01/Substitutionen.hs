@@ -30,8 +30,8 @@ domain (Subst ((x,y):xs)) | helper (x,y)      = domain (Subst xs)
                           | otherwise         = nub (x:domain (Subst xs))
     -- | Checks if a VarName would be replaced by itself.
     where helper:: (VarName, Term) -> Bool
-          helper (VarName x1, Var (VarName y1)) = x1 == y1
-          helper (_,_)                          = False
+          helper (x1, Var y1) = x1 == y1
+          helper (_,_)        = False
 
 empty :: Subst
 -- | Creates an empty substitution.
@@ -44,8 +44,8 @@ single varName term = Subst [(varName, term)]
 apply :: Subst -> Term -> Term
 -- |  The function 'apply' applies a substitution to a term
 apply (Subst []) term = term
-apply (Subst ((VarName x,y):xs)) (Var (VarName x1)) | x == x1    = y
-                                                    | otherwise = apply (Subst xs) (Var (VarName x1))
+apply (Subst ((x,y):xs)) (Var x1) | x == x1    = y
+                                  | otherwise = apply (Subst xs) (Var x1)
 apply subst (Comb n v) = Comb n (map (apply subst) v)
 
 compose :: Subst -> Subst -> Subst

@@ -22,7 +22,7 @@ class (Show a) =>  (Vars a)  where
 
 instance Vars Term where
 -- | Instance for the predefined data type Term
-   allVars  (Var (VarName x)) = [VarName x]
+   allVars  (Var x) = [x]
    allVars  (Comb _ (xs))     = nub (concatMap allVars xs)
 
 instance Vars Rule where
