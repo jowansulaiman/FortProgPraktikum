@@ -10,7 +10,7 @@ The description of each function can be found below.
 -}
 module Variablen
   where
-import A01.Type
+import Type
 import Data.Char
 import Data.List (nub)
 
@@ -18,28 +18,24 @@ class (Show a) =>  (Vars a)  where
    -- | default function
    allVars ::  a -> [VarName]
    -- | The function $'allVars' returns all variables contained in a data type (without duplicates).
-   allVars   x      = [VarName (show x)]
+   allVars   x = [VarName (show x)]
 
 instance Vars Term where
 -- | Instance for the predefined data type Term
    allVars  (Var (VarName x)) = [VarName x]
-   allVars  (Comb _ []  )     = []
-   allVars  (Comb _ (xs))     = nub (concat (map allVars xs))
+   allVars  (Comb _ (xs))     = nub (concatMap allVars xs)
 
 instance Vars Rule where
 -- | Instance for the predefined data type Rule
-   allVars  (Rule t []) = allVars t
-   allVars  (Rule t ts) = nub $ allVars t ++ concat (map allVars ts)
+   allVars  (Rule t ts) = nub $ allVars t ++ concatMap allVars ts
 
 instance Vars Prog where
 -- | Instance for the predefined data type Prog
-   allVars  (Prog [])    = []
-   allVars  (Prog rules) = nub (concat (map allVars rules))
+   allVars  (Prog rules) = nub (concatMap allVars rules)
 
 instance Vars Goal where
 -- | Instance for the predefined data type Goal
-  allVars (Goal [])  = []
-  allVars (Goal ts ) = nub (concat (map allVars ts))
+  allVars (Goal ts ) = nub (concatMap allVars ts)
 
 freshVars :: [VarName]
 -- | Returns an infinite List of Varnames valid in Prolog. (specified in task 3.2)
