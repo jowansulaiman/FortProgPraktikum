@@ -5,7 +5,7 @@ Description : Representation of terms
 Maintainer  : Jowan Sulaiman and Kjell Rothenburger
 
 the module contains a type class $Pretty, and contains  a function $'pretty' and $'concatSep'
-The description of each function can be found below.
+The description of each function can be found below..
 -}
 
 module PrettyPrinting where

@@ -11,7 +11,7 @@ The description of each function can be found below.
 -}
 
 module Substitutionen
- (domain, empty, single, apply, compose, restrictTo)
+ (domain, empty, single, apply, compose, restrictTo, checkProperties)
  where
 import Type
 import Data.List (nub, sort)
@@ -50,12 +50,13 @@ apply subst (Comb n v) = Comb n (map (apply subst) v)
 
 compose :: Subst -> Subst -> Subst
 -- | The function 'compose' composes two substitions with each other.
-compose (Subst s1) (Subst s2) = Subst $ filter unRedundantSubstitution $ map (\(x,y) -> (x, apply (Subst s1) y)) s2
+compose (Subst s1) (Subst s2) = Subst $ filter helper $ map (\(x,y) -> (x, apply (Subst s1) y)) s2
                                      ++ filter (\(x,_) -> x `notElem` domain (Subst s2)) s1
-  where
-    unRedundantSubstitution :: (VarName,Term) -> Bool
-    unRedundantSubstitution (_, Comb _ _) = True
-    unRedundantSubstitution (x, Var y)    = x /= y
+  where  
+    -- | removes redundant substitutions
+    helper :: (VarName,Term) -> Bool
+    helper (_, Comb _ _) = True
+    helper (x, Var y)    = x /= y
 
 restrictTo :: Subst -> [VarName] -> Subst
 -- | The function 'restrictTo' restricts the domain of a substitution to a given set of variables,
@@ -68,12 +69,13 @@ instance Pretty Subst where
     pretty (Subst s)  = "{" ++ helper s [] ++ "}"
         -- | Creates a string that lists all substitutions that would be made.
         -- The second argument is a list that contains all VarNames that have already been replaced.
-        where helper :: [(VarName,Term)] -> [String] -> String
-              helper [] _ = ""
-              helper ((VarName x,y):xs) [] | x == pretty y = helper xs []
-                                           | otherwise     = x ++ " -> " ++ pretty y ++ helper xs [x]
-              helper ((VarName x,y):xs) l  | x == pretty y || elem x l = helper xs l
-                                           | otherwise                 = ", " ++ x ++ " -> " ++ pretty y ++ helper xs (x:l)
+        where
+          helper :: [(VarName,Term)] -> [String] -> String
+          helper [] _ = ""
+          helper ((VarName x,y):xs) [] | x == pretty y             = helper xs []
+                                       | otherwise                 = x ++ " -> " ++ pretty y ++ helper xs [x]
+          helper ((VarName x,y):xs) l  | x == pretty y || elem x l = helper xs l
+                                       | otherwise                 = ", " ++ x ++ " -> " ++ pretty y ++ helper xs (x:l)
 
 instance Vars Subst where
   -- |  Instance for the predefined data type Subst
@@ -85,17 +87,17 @@ instance Arbitrary Subst where
     arbitrary = do n <- choose (0,4)
                    x <- vector n `suchThat` (\x -> nub x == x)
                    y <- vector n
-                   return $ Subst $ clean (zip x y)
-        where clean :: [(VarName,Term)] -> [(VarName,Term)]
+                   return $ Subst $ helper (zip x y)
+        where
+          helper :: [(VarName,Term)] -> [(VarName,Term)]
         -- | removes redundant substitutions
-              clean [] = []
-              clean ((VarName x,y):xs) | x == pretty y = clean xs
-                                       | otherwise     = (VarName x,y):clean xs
+          helper [] = []
+          helper ((VarName x,y):xs) | x == pretty y = helper xs
+                                    | otherwise     = (VarName x,y):helper xs
 
 isSubListOf :: [VarName] -> [VarName] -> Bool
 -- | Checks if the first list is a sublist of the second list
 isSubListOf xs ys = foldr (&&) True (map (\x -> elem x ys) xs)
-
 
 {-|
 --------------------------------------------{QuickCheck properties}-----------------------------------------------------
@@ -149,7 +151,22 @@ prop_15 xs = domain (restrictTo empty xs) == []
 prop_16 :: [VarName] -> Subst -> Bool
 prop_16 xs s = isSubListOf (domain (restrictTo s xs)) xs
 
--- Tests all properties.
+-- | check all properties.
 return []
-testAll :: IO Bool
-testAll = $quickCheckAll
+checkProperties :: IO Bool
+checkProperties = $quickCheckAll
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
