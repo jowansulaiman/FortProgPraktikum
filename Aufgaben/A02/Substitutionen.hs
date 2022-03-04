@@ -52,7 +52,7 @@ compose :: Subst -> Subst -> Subst
 -- | The function 'compose' composes two substitions with each other.
 compose (Subst s1) (Subst s2) = Subst $ filter helper $ map (\(x,y) -> (x, apply (Subst s1) y)) s2
                                      ++ filter (\(x,_) -> x `notElem` domain (Subst s2)) s1
-  where  
+  where
     -- | removes redundant substitutions
     helper :: (VarName,Term) -> Bool
     helper (_, Comb _ _) = True
@@ -87,13 +87,7 @@ instance Arbitrary Subst where
     arbitrary = do n <- choose (0,4)
                    x <- vector n `suchThat` (\x -> nub x == x)
                    y <- vector n
-                   return $ Subst $ helper (zip x y)
-        where
-          helper :: [(VarName,Term)] -> [(VarName,Term)]
-        -- | removes redundant substitutions
-          helper [] = []
-          helper ((VarName x,y):xs) | x == pretty y = helper xs
-                                    | otherwise     = (VarName x,y):helper xs
+                   return (Subst ((zip x y)))
 
 isSubListOf :: [VarName] -> [VarName] -> Bool
 -- | Checks if the first list is a sublist of the second list
@@ -151,8 +145,9 @@ prop_15 xs = domain (restrictTo empty xs) == []
 prop_16 :: [VarName] -> Subst -> Bool
 prop_16 xs s = isSubListOf (domain (restrictTo s xs)) xs
 
--- | check all properties.
+-- | return True, if it was successful.
 return []
+-- | check all properties.
 checkProperties :: IO Bool
 checkProperties = $quickCheckAll
 
