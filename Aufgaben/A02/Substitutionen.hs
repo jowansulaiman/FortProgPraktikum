@@ -4,8 +4,8 @@ Module      : Substitutionen
 Description : Assignments of variables to terms as an abstract data type (ADT).
 Maintainer  : Jowan Sulaiman and Kjell Rothenburger
 
-the module contains a Data type $Subst,
-and contains the following functions $'domain', $'empty', $'single', $'apply',
+The module contains a Data type $Subst
+and the functions $'domain', $'empty', $'single', $'apply',
                                      $'compose', $'restrictTo'.
 The description of each function can be found below.
 -}
@@ -20,7 +20,7 @@ import Test.QuickCheck
 import Variablen
 
 data Subst  = Subst [(VarName, Term)]
--- | Data type for program 'Subst'
+-- | Data type 'Subst'
   deriving (Show, Eq)
 
 domain :: Subst -> [VarName]
@@ -28,7 +28,7 @@ domain :: Subst -> [VarName]
 domain (Subst []) = []
 domain (Subst ((x,y):xs)) | helper (x,y)      = domain (Subst xs)
                           | otherwise         = nub (x:domain (Subst xs))
-    -- | Checks if x VarName would be replaced by itself.
+    -- | Checks if a VarName would be replaced by itself.
     where helper:: (VarName, Term) -> Bool
           helper (VarName x1, Var (VarName y1)) = x1 == y1
           helper (_,_)                          = False
@@ -53,7 +53,7 @@ compose :: Subst -> Subst -> Subst
 compose (Subst s1) (Subst s2) = Subst $ filter helper $ map (\(x,y) -> (x, apply (Subst s1) y)) s2
                                      ++ filter (\(x,_) -> x `notElem` domain (Subst s2)) s1
   where
-    -- | removes redundant substitutions
+    -- | returns false if the suggested substitution is redundant
     helper :: (VarName,Term) -> Bool
     helper (_, Comb _ _) = True
     helper (x, Var y)    = x /= y
@@ -145,23 +145,8 @@ prop_15 xs = domain (restrictTo empty xs) == []
 prop_16 :: [VarName] -> Subst -> Bool
 prop_16 xs s = isSubListOf (domain (restrictTo s xs)) xs
 
--- | return True, if it was successful.
+-- | return True if the tests were all successful.
 return []
 -- | check all properties.
 checkProperties :: IO Bool
 checkProperties = $quickCheckAll
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

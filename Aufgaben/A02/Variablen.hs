@@ -3,8 +3,9 @@ Module      : Variablen
 Description : determining existing variable names and creating an infinite amount of fresh ones
 Maintainer  : Jowan Sulaiman and Kjell Rothenburger
 
-the module contains a Data type $Subst,
-and contains the following functions $'allVars', $freshVars/
+the module contains the type class $Vars
+which contains the function $'allVars'.
+The module also contains the function $freshVars.
 The description of each function can be found below.
 -}
 module Variablen where
@@ -15,7 +16,7 @@ import Data.List (nub)
 class (Show a) =>  (Vars a)  where
    -- | default function
    allVars ::  a -> [VarName]
-   -- | This function $'allVars' returns all variables contained in a data type (without duplicates).
+   -- | The function $'allVars' returns all variables contained in a data type (without duplicates).
    allVars   x      = [VarName (show x)]
 
 instance Vars Term where
@@ -44,6 +45,6 @@ freshVars :: [VarName]
 freshVars = genFreshVars 0
  where
  genFreshVars :: Int -> [VarName]
- genFreshVars n | n < 26  = (VarName [chr(ord('A')+n)]):(genFreshVars (n+1))
-                | n >= 26 = (VarName ([chr(ord('A')+(mod n 26))] ++ (show ((div n 26)-1)))):(genFreshVars (n+1))
+ genFreshVars n | n < 26    = (VarName [chr(ord('A')+n)]):(genFreshVars (n+1))
+                | n >= 26   = (VarName ([chr(ord('A')+(mod n 26))] ++ (show ((div n 26)-1)))):(genFreshVars (n+1))
                 | otherwise = []
