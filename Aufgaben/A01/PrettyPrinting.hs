@@ -4,7 +4,8 @@ Description : Representation of terms
 
 Maintainer  : Jowan Sulaiman and Kjell Rothenburger
 
-the module contains a type class $Pretty, and contains  a function $'pretty' and $'concatSep'
+the module contains a type class $Pretty which contains  the function $'pretty'.
+The module also contains the function $concatSep.
 The description of each function can be found below..
 -}
 
@@ -14,7 +15,7 @@ import Type
 class  (Show a) => (Pretty a)  where
      -- | default function
      pretty :: a -> String
-     -- | The function $'pretty' takes a value and converts it to string by using show.
+     -- | The function $'pretty' takes a value and converts it to a string by using show.
      pretty  = show
 
 instance Pretty Term where
