@@ -8,8 +8,9 @@ which contains the function $'allVars'.
 The module also contains the function $freshVars.
 The description of each function can be found below.
 -}
-module Variablen where
-import Type
+module Variablen
+  where
+import A01.Type
 import Data.Char
 import Data.List (nub)
 

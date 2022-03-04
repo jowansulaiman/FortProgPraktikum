@@ -24,12 +24,15 @@ import Substitutionen
 
 ds :: Term -> Term -> Maybe (Term, Term)
 -- | the function 'ds', which calculates the disagreement set of two terms and returns them as a pair.
-ds (Var (VarName x1))  (Var (VarName x2)) | x1 == x2 = Nothing
-                                          | otherwise = Just (Var (VarName x2),  (Var (VarName x2)))
+ds (Var (VarName x1))  (Var (VarName x2))
+                        | x1 == x2  = Nothing
+                        | otherwise = Just (Var (VarName x2),  (Var (VarName x2)))
+ds (Comb f  m) (Comb g  n)
+                        | (f /= g  && (length m) /= (length n))   = Just ((Comb f  m),  (Comb g n))
+                        | (f == g  && (length m) == (length n))   =
+                        | otherwise = Nothing
 
-ds t1                  t2                 | x1 == x2 = Nothing
-                                          | otherwise = Just (Var (VarName x2),  (Var (VarName x2)))
-
+-- Comb CombName [Term]
 -- | (single t1 (Var (VarName x2)) == x2 = Nothing
 --                                        | otherwise Just ((Var (VarName x1)),  (Var (VarName x2)))
 -- ds (Var (VarName x1))  (Var (VarName x2))  | x1 == x2 = Nothing
@@ -50,11 +53,10 @@ apply subst (Comb n v) = Comb n (map (apply subst) v)
 -- | the function 'unify', which, building on the function ds, determines the most general unifier for two terms,
 -- provided that the two terms are unifiable.
 
-
 {-|
 --------------------------------------------{QuickCheck properties}-----------------------------------------------------
 -}
-
+{-
 prop_1 :: Term -> Bool
 prop_1 t = ds(t,t) == []
 
@@ -64,10 +66,13 @@ prop_2 t1 t2  =  ds(t1,t2) /= []  ==>  t1 /= t2
 prop_3 ::  Term ->  Term -> Property
 prop_3 t1 t2  = ds(t1,t2) == [] ==> (unify(t1,t2) /= Nothing  && domain(unify(t1,t2)) == [])
 
-
 prop_4 ::  Term ->  Term -> Property
 prop_4 t1 t2  = unify(t1,t2) /=  Nothing  ==> (ds(apply(unify(t1,t2),t1),apply(unify(t1,t2),t2)) == [])
 
--- Tests all.
+
+-- | return True, if it was successful.
 return []
-testAll = $quickCheckAll
+-- | check all properties.
+checkProperties :: IO Bool
+checkProperties = $quickCheckAll
+-}

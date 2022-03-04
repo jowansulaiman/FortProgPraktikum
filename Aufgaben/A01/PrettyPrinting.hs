@@ -44,10 +44,3 @@ concatSep :: [String] -> String -> String
 -- while also seperating the elements using the given seperator
 concatSep [] _   = ""
 concatSep ss sep = foldr1 (\s1 s2 -> s1 ++ sep ++ s2) ss
-
-replace :: Eq a => [a] -> [a] -> [a] -> [a]
-replace [] _    _    = []
-replace s  find repl =
-     if take (length find) s == find
-        then repl ++ (replace (drop (length find) s) find repl)
-        else [head s] ++ (replace (tail s) find repl)
