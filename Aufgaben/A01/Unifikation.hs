@@ -29,8 +29,7 @@ ds (Comb cn1 []) (Comb cn2 [])
     | cn1 == cn2                                      = Nothing
     | otherwise                                       = Just (Comb cn1 [],Comb cn2 [])
 ds (Comb cn1 (v1:xs)) (Comb cn2 (v2:ys))
-    | cn1 /= cn2 || length (v1:xs) /= length (v2:ys)  = Just (Comb cn1 (v1:xs),Comb cn1 (v2:ys))
-    | ds v1 v2 /= Nothing                             = ds v1 v2
+    | cn1 /= cn2 || length (v1:xs) /= length (v2:ys)  = Just (Comb cn1 (v1:xs),Comb cn2 (v2:ys))
     | otherwise                                       = ds (Comb cn1 xs) (Comb cn2 ys)
 ds v1 v2 = Just (v1,v2)
 
@@ -84,8 +83,9 @@ unify :: Term -> Term -> Maybe Subst
 unify t1 t2 = unifyAcc t1 t2 empty
  where
    unifyAcc :: Term -> Term -> Subst -> Maybe Subst
-   unifyAcc t1 t2 s | ds (apply s t1) (apply s t2) == Nothing = Just s
-                    | otherwise = case (ds (apply s t1) (apply s t2)) of
+   unifyAcc t1 t2 s
+    | ds (apply s t1) (apply s t2) == Nothing = Just s
+    | otherwise = case (ds (apply s t1) (apply s t2)) of
                                     --1. Compose next single substitution with old substitution
                                     Just (Var v1, Var v2) -> unifyAcc t1 t2 (compose (single v1 (Var v2)) s)
                                     Just (Var v, t)       -> let s2 = (compose (single v t) s)
