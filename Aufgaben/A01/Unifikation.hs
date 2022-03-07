@@ -21,7 +21,7 @@ import Variablen
 
 ds :: Term -> Term -> Maybe(Term, Term)
 -- | Determines the disagreement set of the two given terms
-ds (Var (VarName "_"))                            = Nothing
+ds (Var (VarName "_")) _                          = Nothing
 ds _ (Var (VarName "_"))                          = Nothing
 ds (Var vn1) (Var vn2)
   | vn1 == vn2                                    = Nothing
