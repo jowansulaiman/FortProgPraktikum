@@ -50,7 +50,11 @@ processInput s p strat file
   --                                Nothing -> putStrLn "There is no last loaded file" >> interaktiveLoop p strat file
   --                                Just f  -> readFileSave p strat f
   -- | s == ":l " ++ fileName    = readFileSave p strat fileName
-  -- | s == ":t " ++ goal        = ...
+  | take 3 s == ":t "            = if validGoal (drop 3 s)
+                                    then case p of
+                                          Nothing     -> putStrLn "No program loaded." >> (interaktiveLoop p strat file)
+                                          (Just prog) -> putStrLn (show (sld prog (parseGoal (drop 3 s)))) >> (interaktiveLoop p strat file)
+                                    else putStrLn "The goal is invalid." >> interaktiveLoop p strat file
   | otherwise                    = putStrLn "Could not read the input. Please try again." >> interaktiveLoop p strat file
 
 
