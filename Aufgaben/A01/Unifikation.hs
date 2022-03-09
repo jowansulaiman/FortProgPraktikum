@@ -34,14 +34,24 @@ ds (Comb cn1 ts1) (Comb cn2 ts2)
     where
       ds_helper :: [Term] -> [Term] -> Maybe(Term, Term)
       ds_helper ((Var v1):ts1) ((Var v2):ts2)
+        | v1 == VarName "_" || v2 == VarName "_"  = ds_helper ts1 ts2
         | v1 == v2                                = ds_helper ts1 ts2
         | otherwise                               = Just(Var v1, Var v2)
       ds_helper ((Comb cn1 ct1):ts1) (((Comb cn2 ct2):ts2))
         | cn1 /= cn2 || length ct1 /= length ct2  = Just((Comb cn1 ct1), (Comb cn2 ct2))
-        | ct1 /= ct2                              = ds_helper ct1 ct2
+        | ct1 /= ct2                              = let ds' = ds_helper ct1 ct2
+                                                      in if ds' == Nothing
+                                                        then ds_helper ts1 ts2
+                                                        else ds'
         | otherwise                               = ds_helper ts1 ts2
-      ds_helper (t1:ts1) (t2:ts2)                 = Just(t1,t2)
-      ds_helper  []         []                    = (error "Unexpected case")
+      ds_helper ((Var v1):ts1) (t2:ts2)
+        | v1 == VarName "_"                       = ds_helper ts1 ts2
+        | otherwise                               = Just((Var v1),t2)
+      ds_helper (t1:ts1) ((Var v2):ts2)
+        | v2 == VarName "_"                       = ds_helper ts1 ts2
+        | otherwise                               = Just(t1,(Var v2))
+      ds_helper  []         []                    = Nothing
+      ds_helper  _          _                     = error "Unexpected pattern."
 ds t1 t2                                          = Just(t1,t2)
 
 unify :: Term -> Term -> Maybe Subst
