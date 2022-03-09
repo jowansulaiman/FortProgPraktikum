@@ -29,12 +29,12 @@ sld :: Prog -> Goal -> SLDTree
 sld _  (Goal [])        = Node (Goal []) []
 -- Rename every rule and try to apply each rule to the Goal terms
 sld (Prog rs1) (Goal ts) = let rs2 = map (rename (allVars (Goal ts))) rs1
-                            in Node (Goal ts) (concatMap (sld_helper rs2 ts) rs2)
+                            in Node (Goal ts) (concatMap (apply_rule rs2 ts) rs2)
 
 -- Tries to apply a single rule to the leftmost term
 apply_rule :: [Rule] -> [Term] -> Rule -> [(Subst,SLDTree)]
 --  |         all rules; terms to prove; current rule
-apply_rule r ars (t:ts) (Rule tl tr) = case (unify tl t) of
+apply_rule ars (t:ts) (Rule tl tr) = case (unify tl t) of
                                        Nothing  -> []
                                        Just mgu -> [(mgu,sld (Prog ars) (Goal (map (apply mgu) (tr ++ ts))))]
 
