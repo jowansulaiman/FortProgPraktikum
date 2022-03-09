@@ -11,26 +11,21 @@ module Unifikation
  where
 
 import Type
-import Data.List (nub, sort)
-import PrettyPrinting
 import Test.QuickCheck
 import Substitutionen
 import Variablen
 
-
-
 ds :: Term -> Term -> Maybe(Term, Term)
 -- | Determines the disagreement set of the two given terms
-ds (Var (VarName "_")) _                          = Nothing
-ds _ (Var (VarName "_"))                          = Nothing
+ds (Var (VarName "_")) _                        = Nothing
+ds _ (Var (VarName "_"))                        = Nothing
 ds (Var vn1) (Var vn2)
-  | vn1 == vn2                                    = Nothing
-  | otherwise                                     = Just (Var vn1, Var vn2)
-ds (Comb cn1 ts1) (Comb cn2 ts2)
-  | (Comb cn1 ts1) == (Comb cn2 ts2)              = Nothing
-  | cn1 /= cn2                                    = Just ((Comb cn1 ts1), (Comb cn2 ts2))
-  | length ts1 /= length ts2                      = Just ((Comb cn1 ts1), (Comb cn2 ts2))
-  | otherwise                                     = ds_helper ts1 ts2
+  | vn1 == vn2                                  = Nothing
+  | otherwise                                   = Just (Var vn1, Var vn2)
+ds (Comb n1 xs1) (Comb n2 xs2)
+  | (Comb n1 xs1) == (Comb n2 xs2)              = Nothing
+  | n1 /= n2 || length xs1 /= length xs2        = Just ((Comb n1 xs1), (Comb n2 xs2))
+  | otherwise                                   = ds_helper xs1 xs2
     where
       ds_helper :: [Term] -> [Term] -> Maybe(Term, Term)
       ds_helper ((Var v1):ts1) ((Var v2):ts2)
@@ -55,8 +50,8 @@ ds (Comb cn1 ts1) (Comb cn2 ts2)
 ds t1 t2                                          = Just(t1,t2)
 
 unify :: Term -> Term -> Maybe Subst
--- | Determines the most general unificator if it exists
-unify t1 t2 = unifyAcc t1 t2 empty
+-- | Determines the most general unifier (mgu) if it exists
+unify x y = unifyAcc x y empty
  where
    unifyAcc :: Term -> Term -> Subst -> Maybe Subst
    unifyAcc t1 t2 s

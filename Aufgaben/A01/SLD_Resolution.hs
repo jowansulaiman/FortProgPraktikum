@@ -1,10 +1,11 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-|
 Module      : SLD_Resolution
-Description : SLD trees for evaluating queries becomes a suitable representation.
+Description : SLD trees and strategies for traversing them.
 Maintainer  : Jowan Sulaiman and Kjell Rothenburger
 
-The module contains the following functions $'rename'
+The module contains the following functions $'sld', $'apply_rule', $'dfs',
+$'bfs' and $'solveWith'.
 The description of each function can be found below.
 -}
 module SLD_Resolution
@@ -17,21 +18,23 @@ import Test.QuickCheck
 import Variablen
 import Unifikation
 import Umbenennung
-import Data.Maybe(isNothing)
 
 data SLDTree = Node Goal [(Subst,SLDTree)]
 -- | Data type 'SLD trees'
   deriving Show
 
+-- Constructs the SLDTree by resolving the Goal using the Prog.
 sld :: Prog -> Goal -> SLDTree
 -- Reached empty clause (leaf)
 sld _  (Goal [])        = Node (Goal []) []
+-- Rename every rule and try to apply each rule to the Goal terms
 sld (Prog rs1) (Goal ts) = let rs2 = map (rename (allVars (Goal ts))) rs1
                             in Node (Goal ts) (concatMap (sld_helper rs2 ts) rs2)
 
---            all rules; terms to prove; current rule
-sld_helper :: [Rule] -> [Term] -> Rule -> [(Subst,SLDTree)]
-sld_helper ars (t:ts) (Rule tl tr) = case (unify tl t) of
+-- Tries to apply a single rule to the leftmost term
+apply_rule :: [Rule] -> [Term] -> Rule -> [(Subst,SLDTree)]
+--  |         all rules; terms to prove; current rule
+apply_rule r ars (t:ts) (Rule tl tr) = case (unify tl t) of
                                        Nothing  -> []
                                        Just mgu -> [(mgu,sld (Prog ars) (Goal (map (apply mgu) (tr ++ ts))))]
 
