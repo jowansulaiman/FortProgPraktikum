@@ -11,15 +11,9 @@ module InteraktiveUmgebung
  where
 
 import Type
-import Data.List (nub, sort)
 import Substitutionen
 import Test.QuickCheck
-import Variablen
-import Unifikation
-import Umbenennung
-import Data.Maybe(isNothing)
 import System.IO
-import Control.Monad
 import SLD_Resolution
 import PrettyPrinting
 import Parser

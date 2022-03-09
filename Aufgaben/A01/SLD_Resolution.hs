@@ -44,7 +44,7 @@ type Strategy = SLDTree -> [Subst]
 -- | Using depth-first search strategy to get all solutions.
 dfs :: Strategy
 dfs sldTree = dfs' sldTree empty
-  -- | Using depth-first search strategy to get all solutions.
+  -- | Current Tree; accumulated substitution
   where dfs' :: SLDTree -> Subst -> [Subst]
         dfs' (Node (Goal []) []) s = [s]
         dfs' (Node (Goal _) [])  _ = []

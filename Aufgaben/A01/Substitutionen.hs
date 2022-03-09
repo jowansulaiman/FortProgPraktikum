@@ -11,7 +11,7 @@ The description of each function can be found below.
 -}
 
 module Substitutionen
- (domain, empty, single, apply, compose, restrictTo, Subst)
+ (domain, empty, single, apply, compose, restrictTo, Subst, isSubListOf, checkProperties)
  where
 import Type
 import Data.List (nub, sort)
@@ -25,9 +25,9 @@ data Subst  = Subst [(VarName, Term)]
 
 domain :: Subst -> [VarName]
 -- | The function $'domain' returns the domain (Definitionsbereich) of a substitution.
-domain (Subst []) = []
-domain (Subst ((x,y):xs)) | helper (x,y)      = domain (Subst xs)
-                          | otherwise         = nub (x:domain (Subst xs))
+domain (Subst [])                               = []
+domain (Subst ((x,y):xs)) | helper (x,y)        = domain (Subst xs)
+                          | otherwise           =  nub (x:domain (Subst xs))
     -- | Checks if a VarName would be replaced by itself.
     where helper:: (VarName, Term) -> Bool
           helper (x1, Var y1) = x1 == y1
