@@ -2,7 +2,6 @@
 Module      : InteraktiveUmgebung
 Description : An interactive environment for the prolog interpreter
 Maintainer  : Jowan Sulaiman and Kjell Rothenburger
-
 The module contains the following functions $'start', $'interactiveLoop',
 $'processInput', $'parseGoal', $'validGoal', $'readFileSave', $'helpHeader and
 '$'header'.
@@ -60,6 +59,7 @@ processInput s p strat file
                                        Nothing     -> putStrLn "No program loaded." >> (interactiveLoop p strat file)
                                        (Just prog) -> putStrLn (show (sld prog (parseGoal (drop 3 s)))) >> (interactiveLoop p strat file)
                                  else putStrLn "The goal is invalid." >> interactiveLoop p strat file
+ | s == ""                   = interactiveLoop p strat file
  | otherwise                 = putStrLn "Could not read the input. Please try again." >> interactiveLoop p strat file
 
 
