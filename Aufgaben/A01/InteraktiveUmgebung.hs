@@ -12,8 +12,6 @@ module InteraktiveUmgebung
 
 import Type
 import Substitutionen
-import Test.QuickCheck
-import System.IO
 import SLD_Resolution
 import PrettyPrinting
 import Parser
@@ -75,7 +73,7 @@ requestSolution p strat file [] = do
  s <- getLine
  if s == ";" then putStrLn "No more solutions." >> interactiveLoop p strat file
    else
-    if s == "" || s == "." then putStrLn " ."
+    if s == "" || s == "." then putStrLn "No more solutions."
          >> interactiveLoop p strat file
       else putStrLn "Invalid input. Type ';' to request additional solutions or ENTER to accept the solution."
            >> requestSolution p strat file []
@@ -99,22 +97,23 @@ readFileSave :: Maybe Prog -> Strategy -> String -> IO ()
 readFileSave p strat file = do
   e <- (parseFile file) :: IO (Either String Prog)
   (case e of
-    Left s            -> putStrLn "The file could not be found." >> interactiveLoop p strat (Just file)
+    Left _            -> putStrLn "The file could not be found." >> interactiveLoop p strat (Just file)
     Right prog        -> putStrLn "Loaded." >> interactiveLoop (Just prog) strat (Just file))
 
 -- String for the ":h" command
 helpHeader :: String
 helpHeader = unlines
  [
-   " <goal>      Solves/proves the specified goal.   "
- , " :h          Shows this help message.            "
- , " :l <file>   Loads the specified file.           "
- , " :p          Prints the currently loaded program."
- , " :q          Exits the interactive environment.  "
- , " :r          Reloads the last loaded file.       "
- , " :s <strat>  Sets the specified search strategy  "
- , "             where <strat> is one of 'dfs', 'bfs', or 'iddfs'."
- , " :t <goal>   Prints the SLD tree for the specified goal.  "
+   " Commands available from the prompt:             "
+ , "  <goal>      Solves/proves the specified goal.   "
+ , "   :h          Shows this help message.            "
+ , "   :l <file>   Loads the specified file.           "
+ , "   :p          Prints the currently loaded program."
+ , "   :q          Exits the interactive environment.  "
+ , "   :r          Reloads the last loaded file.       "
+ , "   :s <strat>  Sets the specified search strategy  "
+ , "               where <strat> is one of 'dfs', 'bfs', or 'iddfs'."
+ , "   :t <goal>   Prints the SLD tree for the specified goal.  "
  ]
 
 -- String for the start of the interactive program

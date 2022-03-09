@@ -12,9 +12,7 @@ module SLD_Resolution
   where
 
 import Type
-import Data.List (nub, sort)
 import Substitutionen
-import Test.QuickCheck
 import Variablen
 import Unifikation
 import Umbenennung
@@ -37,6 +35,7 @@ apply_rule :: [Rule] -> [Term] -> Rule -> [(Subst,SLDTree)]
 apply_rule ars (t:ts) (Rule tl tr) = case (unify tl t) of
                                        Nothing  -> []
                                        Just mgu -> [(mgu,sld (Prog ars) (Goal (map (apply mgu) (tr ++ ts))))]
+apply_rule _ _ _ = []
 
 -- | Defines how to get all substitutions from a sld tree.
 type Strategy = SLDTree -> [Subst]
