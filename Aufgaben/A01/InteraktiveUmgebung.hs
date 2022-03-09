@@ -3,8 +3,8 @@ Module      : InteraktiveUmgebung
 Description : An interactive environment for the prolog interpreter
 Maintainer  : Jowan Sulaiman and Kjell Rothenburger
 The module contains the following functions $'start', $'interactiveLoop',
-$'processInput', $'parseGoal', $'validGoal', $'readFileSave', $'helpHeader and
-'$'header'.
+$'processInput', $'parseGoal', $'validGoal', $'readFileSave', $'helpHeader,
+'$'header' and $'requestSolution'.
 The description of each function can be found below.
 -}
 module InteraktiveUmgebung
@@ -49,7 +49,9 @@ processInput s p strat file
  | s == ":q"                 = putStrLn "Successful termination."
  | validGoal s               = case p of
                                  Nothing     -> putStrLn "No program loaded." >> (interactiveLoop p strat file)
-                                 (Just prog) -> putStrLn (show (solveWith prog (parseGoal s) strat)) >> (interactiveLoop p strat file)
+                                 (Just prog) -> case (solveWith prog (parseGoal s) strat) of
+                                                  []     -> putStrLn "No solution." >> interactiveLoop p strat file
+                                                  (x:xs) -> putStr (show x) >> requestSolution p strat file xs
  | s == ":r"                 = case file of
                                 Nothing -> putStrLn "There is no last loaded file." >> interactiveLoop p strat file
                                 Just f  -> readFileSave p strat f
@@ -60,7 +62,29 @@ processInput s p strat file
                                        (Just prog) -> putStrLn (show (sld prog (parseGoal (drop 3 s)))) >> (interactiveLoop p strat file)
                                  else putStrLn "The goal is invalid." >> interactiveLoop p strat file
  | s == ""                   = interactiveLoop p strat file
+ | s == ";"                  = putStrLn "Type in a goal first to request more solutions." >> interactiveLoop p strat file
  | otherwise                 = putStrLn "Could not read the input. Please try again." >> interactiveLoop p strat file
+
+
+-- Called after the program solved a goal.
+-- Reads user input in case the user wants to request additional solutions after.
+requestSolution :: Maybe Prog -> Strategy -> Maybe String -> [Subst] -> IO ()
+requestSolution p strat file (x:xs) = do
+ s <- getLine
+ if s == ";" then putStr (show x) >> requestSolution p strat file xs
+   else
+    if s == "" || s == "." then putStrLn " ."
+         >> interactiveLoop p strat file
+    else putStrLn "Invalid input. Type ';' to request additional solutions or ENTER to accept the solution."
+         >> requestSolution p strat file (x:xs)
+requestSolution p strat file [] = do
+ s <- getLine
+ if s == ";" then putStrLn "No more solutions." >> interactiveLoop p strat file
+   else
+    if s == "" || s == "." then putStrLn " ."
+         >> interactiveLoop p strat file
+      else putStrLn "Invalid input. Type ';' to request additional solutions or ENTER to accept the solution."
+           >> requestSolution p strat file []
 
 
 -- Parses the given string as a Goal.
