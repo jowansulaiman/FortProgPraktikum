@@ -11,7 +11,7 @@ The description of each function can be found below.
 -}
 
 module Substitutionen
- (domain, empty, single, apply, compose, restrictTo, Subst, isSubListOf, checkProperties)
+ (domain, empty, single, apply, compose, restrictTo, Subst, isSubListOf)
  where
 import Type
 import Data.List (nub, sort)
