@@ -28,6 +28,7 @@ ds (Comb n1 xs1) (Comb n2 xs2)
   | otherwise                                   = ds_helper xs1 xs2
     where
       ds_helper :: [Term] -> [Term] -> Maybe(Term, Term)
+      -- | Determines the ds for two lists of terms.
       ds_helper ((Var v1):ts1) ((Var v2):ts2)
         | v1 == VarName "_" || v2 == VarName "_"  = ds_helper ts1 ts2
         | v1 == v2                                = ds_helper ts1 ts2
@@ -54,18 +55,19 @@ unify :: Term -> Term -> Maybe Subst
 unify x y = unifyAcc x y empty
  where
    unifyAcc :: Term -> Term -> Subst -> Maybe Subst
+   -- term 1; term 2; accumulated substitution
    unifyAcc t1 t2 s
       | ds (apply s t1) (apply s t2) == Nothing = Just s
       | otherwise =
-        case (ds (apply s t1) (apply s t2)) of
-        --1. Compose next single substitution with old substitution
-        Just (Var v1, Var v2) -> unifyAcc t1 t2 (compose (single v1 (Var v2)) s)
-        Just (Var v, t)       -> let s2 = (compose (single v t) s)
-        --2. occur check
-          in if (v `elem` (allVars t)) then Nothing else unifyAcc t1 t2 s2
-        Just (t, Var v)       -> let s2 = (compose (single v t) s)
-          in if (v `elem` (allVars t)) then Nothing else unifyAcc t1 t2 s2
-        _                     -> Nothing
+          case (ds (apply s t1) (apply s t2)) of
+            --1. Compose next single substitution with old substitution
+            Just (Var v1, Var v2) -> unifyAcc t1 t2 (compose (single v1 (Var v2)) s)
+            Just (Var v, t)       -> let s2 = (compose (single v t) s)
+                                        --2. occur check
+                                        in if (v `elem` (allVars t)) then Nothing else unifyAcc t1 t2 s2
+            Just (t, Var v)       -> let s2 = (compose (single v t) s)
+                                        in if (v `elem` (allVars t)) then Nothing else unifyAcc t1 t2 s2
+            _                     -> Nothing
 
 {- |
 --------------------------------------------{QuickCheck properties}-----------------------------------------------------
@@ -87,7 +89,7 @@ prop_4 t1 t2 = unify t1 t2 /= Nothing ==> case (unify t1 t2) of
                                             Just mgu -> ds (apply mgu t1 ) (apply mgu t2 ) == Nothing
                                             _        -> False
 
--- | return True, if it was successful.
+-- | return True if all tests were successful.
 return []
 -- | check all properties.
 checkProperties :: IO Bool

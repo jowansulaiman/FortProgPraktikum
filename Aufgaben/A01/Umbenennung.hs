@@ -27,24 +27,27 @@ rename l (Rule z zs) = let (y:ys) = renameTerms (l ++ (allVars z ++ (concatMap a
   -- Renames the list of terms by iterating through (v:vs) using the names given
   -- in nextNames but ommiting the VarNames given in f.
   renameTerms :: [VarName] -> [VarName] -> [Term] -> [VarName] -> [Term]
-  --             forbidden     remaining   terms     nextNames
+  -- forbidden names; remaining names; all terms; nextNames
   renameTerms f  []    xs ns   = renameAll_ f xs ns
   renameTerms f (v:vs) xs (n:ns)
    | n `elem` f                = renameTerms f (v:vs) xs ns
    | v == VarName "_"          = renameTerms f vs xs (n:ns)
    | otherwise                 = renameTerms f vs (map (apply (single v (Var n))) xs) ns
-  renameTerms _  _    _ _      = error "unex.. "
+  renameTerms _  _    _ _      = error "Unexpected pattern."
 
+  -- Renames every Variable "_" by calling rename_ until there is no anonymous
+  -- variable left
   renameAll_ :: [VarName] -> [Term] -> [VarName] -> [Term]
-  -- | Renames every Variable "_"
+  -- forbidden names; all terms; nextNames
   renameAll_ f ts (n:ns)
    | n `elem` f    = renameAll_ f ts ns
    | otherwise     = let new = rename_ ts n
                        in if new == ts then ts else renameAll_ f new ns
   renameAll_ _ _ _ = error " "
 
+  -- renames the first occurence of VarName "_" to the given VarName
   rename_ :: [Term] -> VarName -> [Term]
-  -- | renames the first occurence of VarName "_" to the given VarName
+  -- all terms; new name
   rename_ ((Var vn):ts) v
    | vn == VarName "_" = (Var v):ts
    | otherwise         = (Var vn):(rename_ ts v)

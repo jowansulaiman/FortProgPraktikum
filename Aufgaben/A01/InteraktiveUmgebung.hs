@@ -31,6 +31,7 @@ interactiveLoop p strat file = do
 
 -- Processes the input String
 processInput :: String -> Maybe Prog -> Strategy -> Maybe String -> IO ()
+-- input string; loaded program; current strategy; current fileName
 processInput s p strat file
  | s == ":h"                 = putStrLn helpHeader >> (interactiveLoop p strat file)
  | s == ":p"                 =  case p of
@@ -55,17 +56,18 @@ processInput s p strat file
                                  else putStrLn "The goal is invalid." >> interactiveLoop p strat file
  | s == ""                   = interactiveLoop p strat file
  | s == ";"                  = putStrLn "Type in a goal first to request more solutions." >> interactiveLoop p strat file
- | otherwise                 = putStrLn "Could not read the input. Please try again." >> interactiveLoop p strat file
+ | otherwise                 = putStrLn "Could not read the input. Type ':h' to get a list of valid commands." >> interactiveLoop p strat file
 
 
 -- Called after the program solved a goal.
 -- Reads user input in case the user wants to request additional solutions after.
 requestSolution :: Maybe Prog -> Strategy -> Maybe String -> [Subst] -> IO ()
+-- loaded program; current strategy; fileName; list of solutions
 requestSolution p strat file (x:xs) = do
  s <- getLine
  if s == ";" then putStr (show x) >> requestSolution p strat file xs
    else
-    if s == "" || s == "." then putStrLn " ."
+    if s == "" || s == "." then putStrLn "okay"
          >> interactiveLoop p strat file
     else putStrLn "Invalid input. Type ';' to request additional solutions or ENTER to accept the solution."
          >> requestSolution p strat file (x:xs)
@@ -73,7 +75,7 @@ requestSolution p strat file [] = do
  s <- getLine
  if s == ";" then putStrLn "No more solutions." >> interactiveLoop p strat file
    else
-    if s == "" || s == "." then putStrLn "No more solutions."
+    if s == "" || s == "." then putStrLn "okay"
          >> interactiveLoop p strat file
       else putStrLn "Invalid input. Type ';' to request additional solutions or ENTER to accept the solution."
            >> requestSolution p strat file []
@@ -112,7 +114,7 @@ helpHeader = unlines
  , "   :q          Exits the interactive environment.  "
  , "   :r          Reloads the last loaded file.       "
  , "   :s <strat>  Sets the specified search strategy  "
- , "               where <strat> is one of 'dfs', 'bfs', or 'iddfs'."
+ , "               where <strat> is one of 'dfs' or 'bfs'."
  , "   :t <goal>   Prints the SLD tree for the specified goal.  "
  ]
 
