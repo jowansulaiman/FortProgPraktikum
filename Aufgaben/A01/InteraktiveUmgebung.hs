@@ -44,7 +44,7 @@ processInput s p strat file
                                  Nothing     -> putStrLn "No program loaded." >> (interactiveLoop p strat file)
                                  (Just prog) -> case (solveWith prog (parseGoal s) strat) of
                                                   []     -> putStrLn "No solution." >> interactiveLoop p strat file
-                                                  (x:xs) -> putStr (show x) >> requestSolution p strat file xs
+                                                  (x:xs) -> putStr (pretty x) >> requestSolution p strat file xs
  | s == ":r"                 = case file of
                                 Nothing -> putStrLn "There is no last loaded file." >> interactiveLoop p strat file
                                 Just f  -> readFileSave p strat f
@@ -65,7 +65,7 @@ requestSolution :: Maybe Prog -> Strategy -> Maybe String -> [Subst] -> IO ()
 -- loaded program; current strategy; fileName; list of solutions
 requestSolution p strat file (x:xs) = do
  s <- getLine
- if s == ";" then putStr (show x) >> requestSolution p strat file xs
+ if s == ";" then putStr (pretty x) >> requestSolution p strat file xs
    else
     if s == "" || s == "." then putStrLn "okay"
          >> interactiveLoop p strat file
